@@ -1,0 +1,158 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 30
+  },
+  "include": [
+    "os-common.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "macos-base",
+      "hidden": true,
+      "inherits": "os-base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      },
+      "cacheVariables": {
+        "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS": "OFF",
+        "DEMOLIB_ENABLE_CLANG_TIDY": "OFF"
+      }
+    },
+    {
+      "name": "macos-debug",
+      "displayName": "macOS Debug (AppleClang / Ninja)",
+      "inherits": "macos-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "macos-release",
+      "displayName": "macOS Release (AppleClang / Ninja)",
+      "inherits": "macos-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "macos-debug",
+      "configurePreset": "macos-debug"
+    },
+    {
+      "name": "macos-release",
+      "configurePreset": "macos-release"
+    },
+    {
+      "name": "macos-debug-install",
+      "displayName": "macOS Build + Install Debug (stage)",
+      "configurePreset": "macos-debug",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "macos-release-install",
+      "displayName": "macOS Build + Install Release (stage)",
+      "configurePreset": "macos-release",
+      "targets": [
+        "install"
+      ]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "macos-debug-test",
+      "configurePreset": "macos-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "macos-release-test",
+      "configurePreset": "macos-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "macos-build-debug",
+      "displayName": "macOS Configure + Build (Debug)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-debug"
+        },
+        {
+          "type": "build",
+          "name": "macos-debug"
+        }
+      ]
+    },
+    {
+      "name": "macos-build-release",
+      "displayName": "macOS Configure + Build (Release)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-release"
+        },
+        {
+          "type": "build",
+          "name": "macos-release"
+        }
+      ]
+    },
+    {
+      "name": "macos-test-debug",
+      "displayName": "macOS Configure + Build + Test + Install (Debug)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-debug"
+        },
+        {
+          "type": "build",
+          "name": "macos-debug"
+        },
+        {
+          "type": "test",
+          "name": "macos-debug-test"
+        },
+        {
+          "type": "build",
+          "name": "macos-debug-install"
+        }
+      ]
+    },
+    {
+      "name": "macos-test-release",
+      "displayName": "macOS Configure + Build + Test + Install (Release)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "macos-release"
+        },
+        {
+          "type": "build",
+          "name": "macos-release"
+        },
+        {
+          "type": "test",
+          "name": "macos-release-test"
+        },
+        {
+          "type": "build",
+          "name": "macos-release-install"
+        }
+      ]
+    }
+  ]
+}

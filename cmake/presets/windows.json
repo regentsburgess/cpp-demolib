@@ -1,0 +1,130 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 30
+  },
+  "include": [
+    "os-common.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "windows-base",
+      "hidden": true,
+      "inherits": "os-base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      },
+      "cacheVariables": {
+        "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS": "OFF",
+        "DEMOLIB_ENABLE_CLANG_TIDY": "OFF"
+      }
+    },
+    {
+      "name": "windows-debug",
+      "displayName": "Windows Debug (Ninja)",
+      "inherits": "windows-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "windows-release",
+      "displayName": "Windows Release (Ninja)",
+      "inherits": "windows-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-debug",
+      "configurePreset": "windows-debug"
+    },
+    {
+      "name": "windows-release",
+      "configurePreset": "windows-release"
+    },
+    {
+      "name": "windows-debug-install",
+      "displayName": "Windows Build + Install Debug (stage)",
+      "configurePreset": "windows-debug",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "windows-release-install",
+      "displayName": "Windows Build + Install Release (stage)",
+      "configurePreset": "windows-release",
+      "targets": [
+        "install"
+      ]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "windows-debug-test",
+      "configurePreset": "windows-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "windows-release-test",
+      "configurePreset": "windows-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "windows-debug-test",
+      "displayName": "Windows Configure + Build + Test + Install (Debug)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-debug"
+        },
+        {
+          "type": "build",
+          "name": "windows-debug"
+        },
+        {
+          "type": "test",
+          "name": "windows-debug-test"
+        },
+        {
+          "type": "build",
+          "name": "windows-debug-install"
+        }
+      ]
+    },
+    {
+      "name": "windows-release-test",
+      "displayName": "Windows Configure + Build + Test + Install (Release)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "windows-release"
+        },
+        {
+          "type": "build",
+          "name": "windows-release"
+        },
+        {
+          "type": "test",
+          "name": "windows-release-test"
+        },
+        {
+          "type": "build",
+          "name": "windows-release-install"
+        }
+      ]
+    }
+  ]
+}

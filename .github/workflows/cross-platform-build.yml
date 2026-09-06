@@ -1,0 +1,176 @@
+name: Cross Platform Build and Test
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    name: Linux / ${{ matrix.toolchain.compiler }} / ${{ matrix.configuration.name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container: ${{ matrix.toolchain.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain:
+          - compiler: GCC 14
+            image: ghcr.io/regentsburgess/demolib-ci:gcc-14
+          - compiler: Clang 19
+            image: ghcr.io/regentsburgess/demolib-ci:clang-19
+        configuration:
+          - name: Debug
+            workflow: ci-debug-test
+          - name: Release
+            workflow: ci-release-test
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Show toolchain
+        run: |
+          "$CXX" --version
+          cmake --version
+          ninja --version
+      - name: Configure, build, and test
+        run: cmake --workflow --preset ${{ matrix.configuration.workflow }}
+
+  windows-llvm-mingw:
+    name: Windows / LLVM-MinGW / ${{ matrix.configuration.name }}
+    runs-on: windows-2022
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration:
+          - name: Debug
+            workflow: ci-debug-test
+          - name: Release
+            workflow: ci-release-test
+    steps:
+      - name: Preserve repository line endings
+        run: git config --global core.autocrlf input
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Set up MSYS2 CLANG64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANG64
+          update: true
+          install: >-
+            git
+            mingw-w64-clang-x86_64-clang
+            mingw-w64-clang-x86_64-cmake
+            mingw-w64-clang-x86_64-ninja
+      - name: Show toolchain
+        shell: msys2 {0}
+        run: |
+          clang++ --version
+          cmake --version
+          ninja --version
+      - name: Configure, build, and test
+        shell: msys2 {0}
+        run: cmake --workflow --preset ${{ matrix.configuration.workflow }}
+
+  windows-msvc:
+    name: Windows / MSVC 2022 / ${{ matrix.configuration.name }}
+    runs-on: windows-2022
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration:
+          - name: Debug
+            workflow: ci-msvc-debug-test
+          - name: Release
+            workflow: ci-msvc-release-test
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Show toolchain
+        run: cmake --version
+      - name: Configure, build, and test
+        run: cmake --workflow --preset ${{ matrix.configuration.workflow }}
+
+  macos:
+    name: macOS / AppleClang / ${{ matrix.configuration.name }}
+    runs-on: macos-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration:
+          - name: Debug
+            workflow: ci-debug-test
+          - name: Release
+            workflow: ci-release-test
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Show toolchain
+        run: |
+          clang++ --version
+          cmake --version
+          ninja --version
+      - name: Configure, build, and test
+        run: cmake --workflow --preset ${{ matrix.configuration.workflow }}
+
+  clang-sanitizers:
+    name: Linux / Clang 19 / Debug / ASan + UBSan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container: ghcr.io/regentsburgess/demolib-ci:clang-19
+    env:
+      ASAN_OPTIONS: detect_leaks=1:halt_on_error=1
+      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+      LLVM_SYMBOLIZER_PATH: /usr/bin/llvm-symbolizer-19
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Configure, build, and test
+        run: cmake --workflow --preset ci-clang-sanitizers-test
+
+  required-build:
+    name: Required Build and Test
+    if: ${{ always() }}
+    needs:
+      - linux
+      - windows-llvm-mingw
+      - windows-msvc
+      - macos
+      - clang-sanitizers
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every build and test job
+        env:
+          LINUX_RESULT: ${{ needs.linux.result }}
+          WINDOWS_LLVM_MINGW_RESULT: ${{ needs.windows-llvm-mingw.result }}
+          WINDOWS_MSVC_RESULT: ${{ needs.windows-msvc.result }}
+          MACOS_RESULT: ${{ needs.macos.result }}
+          CLANG_SANITIZERS_RESULT: ${{ needs.clang-sanitizers.result }}
+        run: |
+          test "$LINUX_RESULT" = success
+          test "$WINDOWS_LLVM_MINGW_RESULT" = success
+          test "$WINDOWS_MSVC_RESULT" = success
+          test "$MACOS_RESULT" = success
+          test "$CLANG_SANITIZERS_RESULT" = success

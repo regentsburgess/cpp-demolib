@@ -1,0 +1,150 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 30
+  },
+  "include": [
+    "os-common.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "linux-config-base",
+      "hidden": true,
+      "inherits": "os-base",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS": "OFF",
+        "DEMOLIB_ENABLE_CLANG_TIDY": "OFF"
+      }
+    },
+    {
+      "name": "linux-config-debug",
+      "displayName": "Linux Debug (Ninja)",
+      "inherits": "linux-config-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "linux-config-release",
+      "displayName": "Linux Release (Ninja)",
+      "inherits": "linux-config-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "linux-build-debug",
+      "configurePreset": "linux-config-debug"
+    },
+    {
+      "name": "linux-build-release",
+      "configurePreset": "linux-config-release"
+    },
+    {
+      "name": "linux-install-debug",
+      "displayName": "Linux Build + Install Debug",
+      "configurePreset": "linux-config-debug",
+      "targets": [
+        "install"
+      ]
+    },
+    {
+      "name": "linux-install-release",
+      "displayName": "Linux Build + Install Release",
+      "configurePreset": "linux-config-release",
+      "targets": [
+        "install"
+      ]
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "linux-test-debug",
+      "configurePreset": "linux-config-debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "linux-test-release",
+      "configurePreset": "linux-config-release",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "linux-build-debug",
+      "displayName": "Linux Configure + Build (Debug)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-config-debug"
+        },
+        {
+          "type": "build",
+          "name": "linux-build-debug"
+        }
+      ]
+    },
+    {
+      "name": "linux-build-release",
+      "displayName": "Linux Configure + Build (Release)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-config-release"
+        },
+        {
+          "type": "build",
+          "name": "linux-build-release"
+        }
+      ]
+    },
+    {
+      "name": "linux-test-debug",
+      "displayName": "Linux Configure + Build + Test (Debug)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-config-debug"
+        },
+        {
+          "type": "build",
+          "name": "linux-build-debug"
+        },
+        {
+          "type": "test",
+          "name": "linux-test-debug"
+        }
+      ]
+    },
+    {
+      "name": "linux-test-release",
+      "displayName": "Linux Configure + Build + Test (Release)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "linux-release"
+        },
+        {
+          "type": "build",
+          "name": "linux-release"
+        },
+        {
+          "type": "test",
+          "name": "linux-release-test"
+        }
+      ]
+    }
+  ]
+}

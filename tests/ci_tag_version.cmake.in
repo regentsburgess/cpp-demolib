@@ -1,0 +1,32 @@
+# GitHub and GitLab expose tag names through different environment variables.
+set(ci_tag "$ENV{CI_COMMIT_TAG}")
+if("$ENV{GITHUB_REF_TYPE}" STREQUAL "tag")
+    set(ci_tag "$ENV{GITHUB_REF_NAME}")
+endif()
+
+if(ci_tag STREQUAL "")
+    message(STATUS "Not a CI tag pipeline; skipping tag/version validation.")
+    return()
+endif()
+
+set(expected_tag "v@LIB_PROJECT_VERSION@")
+set(expected_prerelease_prefix "${expected_tag}-")
+
+if(ci_tag STREQUAL expected_tag)
+    message(STATUS "CI tag ${ci_tag} matches project version @LIB_PROJECT_VERSION@.")
+    return()
+endif()
+
+string(FIND "${ci_tag}" "${expected_prerelease_prefix}" prefix_position)
+string(LENGTH "${ci_tag}" tag_length)
+string(LENGTH "${expected_prerelease_prefix}" prefix_length)
+
+if(prefix_position EQUAL 0 AND tag_length GREATER prefix_length)
+    message(STATUS "CI tag ${ci_tag} matches project version @LIB_PROJECT_VERSION@ with a suffix.")
+    return()
+endif()
+
+message(FATAL_ERROR
+    "CI tag '${ci_tag}' does not match project version @LIB_PROJECT_VERSION@. "
+    "Expected '${expected_tag}' or '${expected_tag}-<suffix>'."
+)

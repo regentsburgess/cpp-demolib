@@ -1,0 +1,63 @@
+# Modern C++ K&R / LLVM-ish style
+BasedOnStyle: LLVM
+Language: Cpp
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Line length
+ColumnLimit: 100
+
+# Braces: K&R / "Attach" = same line
+BreakBeforeBraces: Attach
+
+# Keep things readable, not too squashed
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+# AllowShortLoopsOnASingleLine: Never
+AllowShortBlocksOnASingleLine: Never
+
+# Pointer / reference alignment
+PointerAlignment: Left        # int* ptr;
+ReferenceAlignment: Left      # int& ref;
+
+# Constructor initializer lists
+BreakConstructorInitializers: AfterColon
+
+# Template declarations
+AlwaysBreakTemplateDeclarations: Yes
+
+# Includes: regroup and sort
+IncludeBlocks: Regroup
+SortIncludes: true
+IncludeCategories:
+  - Regex: '^<Qt'
+    Priority: 1
+  - Regex: '^<'
+    Priority: 2
+  - Regex: '.*'
+    Priority: 3
+
+# Spaces
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpacesInAngles: false
+SpaceBeforeParens: ControlStatements   # if/for/while (x) but Foo(x)
+SpaceAfterCStyleCast: true
+
+# Namespaces
+NamespaceIndentation: None
+FixNamespaceComments: true
+
+# Comments
+ReflowComments: true
+
+# Slight Qt friendliness; harmless if not using Qt
+StatementMacros:
+  - Q_OBJECT
+  - Q_SIGNALS
+  - Q_SLOTS
+  - signals
+  - slots

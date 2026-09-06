@@ -1,0 +1,298 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 30
+  },
+  "configurePresets": [
+    {
+      "name": "ci-base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "installDir": "${sourceDir}/build/${presetName}/stage",
+      "cacheVariables": {
+        "BUILD_TESTING": "ON",
+        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "OFF",
+        "DEMOLIB_ENABLE_CLANG_TIDY": "OFF",
+        "DEMOLIB_COMPILER_WARNINGS_AS_ERRORS": "ON"
+      }
+    },
+    {
+      "name": "ci-clang-coverage",
+      "displayName": "CI Clang Debug Coverage",
+      "inherits": "ci-debug",
+      "cacheVariables": {
+        "DEMOLIB_ENABLE_COVERAGE": "ON"
+      }
+    },
+    {
+      "name": "ci-clang-sanitizers",
+      "displayName": "CI Clang ASan + UBSan",
+      "inherits": "ci-debug",
+      "cacheVariables": {
+        "DEMOLIB_ENABLE_SANITIZERS": "ON"
+      }
+    },
+    {
+      "name": "ci-clang-tidy",
+      "displayName": "CI Clang-Tidy",
+      "inherits": "ci-debug",
+      "cacheVariables": {
+        "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS": "ON",
+        "DEMOLIB_ENABLE_CLANG_TIDY": "ON"
+      }
+    },
+    {
+      "name": "ci-debug",
+      "displayName": "CI Debug",
+      "inherits": "ci-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "ci-msvc",
+      "displayName": "CI MSVC (Visual Studio 2022)",
+      "inherits": "ci-base",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "binaryDir": "${sourceDir}/build/ci-msvc",
+      "installDir": "${sourceDir}/build/ci-msvc/stage",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "ci-release",
+      "displayName": "CI Release",
+      "inherits": "ci-base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "ci-clang-coverage",
+      "configurePreset": "ci-clang-coverage"
+    },
+    {
+      "name": "ci-clang-sanitizers",
+      "configurePreset": "ci-clang-sanitizers"
+    },
+    {
+      "name": "ci-clang-tidy",
+      "configurePreset": "ci-clang-tidy"
+    },
+    {
+      "name": "ci-debug",
+      "configurePreset": "ci-debug"
+    },
+    {
+      "name": "ci-msvc-debug",
+      "configurePreset": "ci-msvc",
+      "configuration": "Debug"
+    },
+    {
+      "name": "ci-msvc-release",
+      "configurePreset": "ci-msvc",
+      "configuration": "Release"
+    },
+    {
+      "name": "ci-release",
+      "configurePreset": "ci-release"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "ci-clang-coverage-test",
+      "configurePreset": "ci-clang-coverage",
+      "filter": {
+        "include": {
+          "label": "unit"
+        }
+      },
+      "output": {
+        "outputOnFailure": true,
+        "outputJUnitFile": "${sourceDir}/build/ci-clang-coverage/ctest.xml"
+      }
+    },
+    {
+      "name": "ci-clang-sanitizers-test",
+      "configurePreset": "ci-clang-sanitizers",
+      "filter": {
+        "include": {
+          "label": "unit"
+        }
+      },
+      "output": {
+        "outputOnFailure": true,
+        "outputJUnitFile": "${sourceDir}/build/ci-clang-sanitizers/ctest.xml"
+      }
+    },
+    {
+      "name": "ci-debug-test",
+      "configurePreset": "ci-debug",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true,
+        "outputJUnitFile": "${sourceDir}/build/ci-debug/ctest.xml"
+      }
+    },
+    {
+      "name": "ci-msvc-debug-test",
+      "configurePreset": "ci-msvc",
+      "configuration": "Debug",
+      "output": {
+        "outputOnFailure": true,
+        "outputJUnitFile": "${sourceDir}/build/ci-msvc/ctest-debug.xml"
+      }
+    },
+    {
+      "name": "ci-msvc-release-test",
+      "configurePreset": "ci-msvc",
+      "configuration": "Release",
+      "output": {
+        "outputOnFailure": true,
+        "outputJUnitFile": "${sourceDir}/build/ci-msvc/ctest-release.xml"
+      }
+    },
+    {
+      "name": "ci-release-test",
+      "configurePreset": "ci-release",
+      "configuration": "Release",
+      "output": {
+        "outputOnFailure": true,
+        "outputJUnitFile": "${sourceDir}/build/ci-release/ctest.xml"
+      }
+    }
+  ],
+  "workflowPresets": [
+    {
+      "name": "ci-clang-coverage-test",
+      "displayName": "CI configure + build + test (Clang Debug Coverage)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-coverage"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-coverage"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-coverage-test"
+        }
+      ]
+    },
+    {
+      "name": "ci-clang-sanitizers-test",
+      "displayName": "CI configure + build + test (Clang ASan + UBSan)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-sanitizers"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-sanitizers"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-sanitizers-test"
+        }
+      ]
+    },
+    {
+      "name": "ci-clang-tidy",
+      "displayName": "CI configure + build with Clang-Tidy",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-tidy"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-tidy"
+        }
+      ]
+    },
+    {
+      "name": "ci-debug-test",
+      "displayName": "CI configure + build + test (Debug)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-debug"
+        },
+        {
+          "type": "build",
+          "name": "ci-debug"
+        },
+        {
+          "type": "test",
+          "name": "ci-debug-test"
+        }
+      ]
+    },
+    {
+      "name": "ci-msvc-debug-test",
+      "displayName": "CI configure + build + test (MSVC Debug)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-msvc"
+        },
+        {
+          "type": "build",
+          "name": "ci-msvc-debug"
+        },
+        {
+          "type": "test",
+          "name": "ci-msvc-debug-test"
+        }
+      ]
+    },
+    {
+      "name": "ci-msvc-release-test",
+      "displayName": "CI configure + build + test (MSVC Release)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-msvc"
+        },
+        {
+          "type": "build",
+          "name": "ci-msvc-release"
+        },
+        {
+          "type": "test",
+          "name": "ci-msvc-release-test"
+        }
+      ]
+    },
+    {
+      "name": "ci-release-test",
+      "displayName": "CI configure + build + test (Release)",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-release"
+        },
+        {
+          "type": "build",
+          "name": "ci-release"
+        },
+        {
+          "type": "test",
+          "name": "ci-release-test"
+        }
+      ]
+    }
+  ]
+}

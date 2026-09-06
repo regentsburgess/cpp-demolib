@@ -1,0 +1,13 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 30
+  },
+  "include": [
+    "cmake/presets/ci.json",
+    "cmake/presets/linux.json",
+    "cmake/presets/macos.json",
+    "cmake/presets/windows.json"
+  ]
+}

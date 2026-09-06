@@ -1,0 +1,61 @@
+# End-to-end test of demolib installed as a package:
+#   install demolib into a temporary prefix
+#     -> configure a standalone consumer with find_package(demolib)
+#     -> build the consumer linked to demolib::demolib
+#     -> run it to verify the installed package works
+
+set(consumer_source_dir "@CMAKE_CURRENT_SOURCE_DIR@/package_consumer")
+set(consumer_root_dir "@CMAKE_CURRENT_BINARY_DIR@/package_consumer")
+set(consumer_build_dir "${consumer_root_dir}/build")
+set(consumer_install_dir "${consumer_root_dir}/install")
+
+file(REMOVE_RECURSE "${consumer_build_dir}" "${consumer_install_dir}")
+
+execute_process(
+    COMMAND "@CMAKE_COMMAND@" --install "@CMAKE_BINARY_DIR@"
+        --prefix "${consumer_install_dir}"
+        --config "${TEST_CONFIG}"
+    COMMAND_ERROR_IS_FATAL ANY
+)
+
+set(configure_command
+    "@CMAKE_COMMAND@"
+    -S "${consumer_source_dir}"
+    -B "${consumer_build_dir}"
+    -G "@CMAKE_GENERATOR@"
+    "-DCMAKE_PREFIX_PATH=${consumer_install_dir}"
+    "-DCMAKE_BUILD_TYPE=${TEST_CONFIG}"
+)
+# Ninja and Makefile generator names do not identify a compiler, so preserve its
+# exact path. Visual Studio instead selects one through its generator and toolset.
+if(NOT "@CMAKE_CXX_COMPILER@" STREQUAL ""
+    AND "@CMAKE_GENERATOR@" MATCHES "Ninja|Makefiles"
+)
+    list(APPEND configure_command "-DCMAKE_CXX_COMPILER=@CMAKE_CXX_COMPILER@")
+endif()
+# Preserve the generator's target architecture (for example, Visual Studio x64).
+if(NOT "@CMAKE_GENERATOR_PLATFORM@" STREQUAL "")
+    list(APPEND configure_command -A "@CMAKE_GENERATOR_PLATFORM@")
+endif()
+# Preserve the generator's compiler toolset (for example, MSVC v143 or ClangCL).
+if(NOT "@CMAKE_GENERATOR_TOOLSET@" STREQUAL "")
+    list(APPEND configure_command -T "@CMAKE_GENERATOR_TOOLSET@")
+endif()
+execute_process(
+    COMMAND ${configure_command}
+    COMMAND_ERROR_IS_FATAL ANY
+)
+
+execute_process(
+    COMMAND "@CMAKE_COMMAND@" --build "${consumer_build_dir}"
+        --config "${TEST_CONFIG}"
+    COMMAND_ERROR_IS_FATAL ANY
+)
+
+execute_process(
+    COMMAND "@CMAKE_CTEST_COMMAND@"
+        --test-dir "${consumer_build_dir}"
+        --build-config "${TEST_CONFIG}"
+        --output-on-failure
+    COMMAND_ERROR_IS_FATAL ANY
+)
