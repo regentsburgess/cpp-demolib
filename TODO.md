@@ -1,10 +1,13 @@
 # TODO
 
-1. Check if inclusion of consumer tests should hinge on DEMOLIB_INSTALL's value.  Put differently, will the consumer tests break of DEMOLIB_INSTALL is false?  If so, what to do?  Should the tests not be include?  Should the combination result in an error?  A warning?
-3. Root CMakeLists.txt cleanup
+1. Get non-embedded CI cross-platform checks working.
+   1. Use existing os-specific workflow presets if possible.  Derive from them with minimal changes otherwise.
+2. Get code-quality CI checks working.
+3. Check if inclusion of consumer tests should hinge on DEMOLIB_INSTALL's value.  Put differently, will the consumer tests break of DEMOLIB_INSTALL is false?  If so, what to do?  Should the tests not be include?  Should the combination result in an error?  A warning?
+4. Root CMakeLists.txt cleanup
    1. Move clangd + compile_commands.json export to separate file
    2. Move common config function to separate file
-4. Cross-compilation target(s)?
+5. Cross-compilation target(s)?
    1. What's easy, relevant, and instructive?
    2. Existing Docker images or build Docker images for CI-driven builds?
    3. What do by CI providers (GitHub and/or GitLab) support?
