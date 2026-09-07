@@ -84,34 +84,6 @@
   ],
   "workflowPresets": [
     {
-      "name": "macos-build-debug",
-      "displayName": "macOS Debug Configure and Build Workflow Preset",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "macos-config-debug"
-        },
-        {
-          "type": "build",
-          "name": "macos-build-debug"
-        }
-      ]
-    },
-    {
-      "name": "macos-build-release",
-      "displayName": "macOS Release Configure and Build Workflow Preset",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "macos-config-release"
-        },
-        {
-          "type": "build",
-          "name": "macos-build-release"
-        }
-      ]
-    },
-    {
       "name": "macos-test-debug",
       "displayName": "macOS Debug Configure, Build, and Test Workflow Preset",
       "steps": [

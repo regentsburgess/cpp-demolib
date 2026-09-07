@@ -103,7 +103,7 @@
     },
     {
       "name": "windows-test-release",
-      "displayName": "Windows Configure, Build, and Test Workflow Preset",
+      "displayName": "Windows Release Configure, Build, and Test Workflow Preset",
       "steps": [
         {
           "type": "configure",

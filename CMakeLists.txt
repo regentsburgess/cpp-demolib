@@ -11,15 +11,15 @@ endmacro()
 set_and_echo(LIB_PROJECT_NAME "demolib")
 set_and_echo(LIB_PROJECT_DESCRIPTION "A demo, reusable C++ library")
 set_and_echo(LIB_PROJECT_VERSION "0.1.0")
-set_and_echo(LIB_PROJECT_HOMEPAGE_URL "https://github.com/regentsburgess/demolib")
+set_and_echo(LIB_PROJECT_HOMEPAGE_URL "https://github.com/regentsburgess/cpp-demolib")
 ## Resulting Library:
 ## The resulting library binary's name, sans any extension.
 ## Also serves as the CMake target name for the library.
 set_and_echo(LIB_TARGET_NAME "demolib")
 ## Public Include Directory:
-## The value of LIB_DIR_NAME must match ./include/LIB_DIR_NAME
-## It sets the root of import statements (e.g.) include <LIB_DIR_NAME/someheader.hpp>
-set_and_echo(LIB_DIR_NAME "${LIB_TARGET_NAME}")
+## The value of LIB_INCLUDE_DIR_NAME must match ./include/LIB_INCLUDE_DIR_NAME
+## It sets the root of import statements (e.g.) include <LIB_INCLUDE_DIR_NAME/someheader.hpp>
+set_and_echo(LIB_INCLUDE_DIR_NAME "${LIB_TARGET_NAME}")
 
 
 # Root project:
@@ -146,7 +146,7 @@ target_sources(${LIB_TARGET_NAME}
         BASE_DIRS
             "${CMAKE_CURRENT_SOURCE_DIR}/include"
         FILES
-            "${CMAKE_CURRENT_SOURCE_DIR}/include/${LIB_DIR_NAME}/example.hpp"
+            "${CMAKE_CURRENT_SOURCE_DIR}/include/${LIB_INCLUDE_DIR_NAME}/example.hpp"
 )
 target_include_directories(${LIB_TARGET_NAME}
     PRIVATE
