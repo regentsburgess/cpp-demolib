@@ -5,7 +5,7 @@
     "minor": 30
   },
   "include": [
-    "os-common.json"
+    "os-base.json"
   ],
   "configurePresets": [
     {
@@ -17,14 +17,11 @@
         "lhs": "${hostSystemName}",
         "rhs": "Linux"
       },
-      "cacheVariables": {
-        "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS": "OFF",
-        "DEMOLIB_ENABLE_CLANG_TIDY": "OFF"
-      }
+      "cacheVariables": {}
     },
     {
       "name": "linux-config-debug",
-      "displayName": "Linux Debug (Ninja)",
+      "displayName": "Linux Debug Config Preset",
       "inherits": "linux-config-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
@@ -32,7 +29,7 @@
     },
     {
       "name": "linux-config-release",
-      "displayName": "Linux Release (Ninja)",
+      "displayName": "Linux Release Config Preset",
       "inherits": "linux-config-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
@@ -42,15 +39,17 @@
   "buildPresets": [
     {
       "name": "linux-build-debug",
+      "displayName": "Linux Debug Build Preset",
       "configurePreset": "linux-config-debug"
     },
     {
       "name": "linux-build-release",
+      "displayName": "Linux Release Build Preset",
       "configurePreset": "linux-config-release"
     },
     {
       "name": "linux-install-debug",
-      "displayName": "Linux Build + Install Debug",
+      "displayName": "Linux Debug Build and Install Preset",
       "configurePreset": "linux-config-debug",
       "targets": [
         "install"
@@ -58,7 +57,7 @@
     },
     {
       "name": "linux-install-release",
-      "displayName": "Linux Build + Install Release",
+      "displayName": "Linux Release Build and Install Preset",
       "configurePreset": "linux-config-release",
       "targets": [
         "install"
@@ -68,6 +67,7 @@
   "testPresets": [
     {
       "name": "linux-test-debug",
+      "displayName": "Linux Debug Test Preset",
       "configurePreset": "linux-config-debug",
       "output": {
         "outputOnFailure": true
@@ -75,6 +75,7 @@
     },
     {
       "name": "linux-test-release",
+      "displayName": "Linux Debug Release Preset",
       "configurePreset": "linux-config-release",
       "output": {
         "outputOnFailure": true
@@ -84,7 +85,7 @@
   "workflowPresets": [
     {
       "name": "linux-build-debug",
-      "displayName": "Linux Configure + Build (Debug)",
+      "displayName": "Linux Debug Configure and Build Workflow Preset",
       "steps": [
         {
           "type": "configure",
@@ -98,7 +99,7 @@
     },
     {
       "name": "linux-build-release",
-      "displayName": "Linux Configure + Build (Release)",
+      "displayName": "Linux Release Configure and Build Workflow Preset",
       "steps": [
         {
           "type": "configure",
@@ -112,7 +113,7 @@
     },
     {
       "name": "linux-test-debug",
-      "displayName": "Linux Configure + Build + Test (Debug)",
+      "displayName": "Linux Debug Configure, Build, and Test Workflow Preset",
       "steps": [
         {
           "type": "configure",
@@ -130,7 +131,7 @@
     },
     {
       "name": "linux-test-release",
-      "displayName": "Linux Configure + Build + Test (Release)",
+      "displayName": "Linux Release Configure, Build, and Test Workflow Preset",
       "steps": [
         {
           "type": "configure",
