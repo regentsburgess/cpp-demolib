@@ -1,6 +1,9 @@
 name: Inspect macOS Runner
 
 on:
+  push:
+    branches:
+      - '**'
   workflow_dispatch:
 
 jobs:
