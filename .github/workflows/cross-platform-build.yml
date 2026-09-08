@@ -1,10 +1,10 @@
 name: Cross Platform Build and Test
 
 on:
-  # push:
-  #   branches:
-  #     - '**'
-  # workflow_dispatch:
+  push:
+    branches:
+      - '**'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,20 +13,31 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# https://github.com/actions/runner-images
 jobs:
-  macos:
-    name: macOS / ${{ matrix.runner }} / ${{ matrix.workflow-preset }}
-    runs-on: ${{ matrix.runner }}
+  macos-arm64:
+    name: macOS ARM64 / ${{ matrix.toolchain.compiler }} / ${{ matrix.workflow-preset }}
+    runs-on: macos-26
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        runner:
-          - macos-26
-          - macos-26-intel
+        toolchain:
+          - compiler: AppleClang
+            cc: /usr/bin/clang
+            cxx: /usr/bin/clang++
+          - compiler: Clang 20
+            cc: /opt/homebrew/opt/llvm@20/bin/clang
+            cxx: /opt/homebrew/opt/llvm@20/bin/clang++
+          - compiler: GCC 15
+            cc: gcc-15
+            cxx: g++-15
         workflow-preset:
           - macos-test-debug
           - macos-test-release
+    env:
+      CC: ${{ matrix.toolchain.cc }}
+      CXX: ${{ matrix.toolchain.cxx }}
     steps:
       - name: Check out source
         uses: actions/checkout@v6
