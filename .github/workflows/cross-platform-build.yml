@@ -62,6 +62,6 @@ jobs:
     steps:
       - name: Require every build and test job
         env:
-          MACOS_RESULT: ${{ needs.macos.result }}
+          MACOS_RESULT: ${{ needs.macos-arm64.result }}
         run: |
           test "$MACOS_RESULT" = success
