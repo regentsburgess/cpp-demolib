@@ -131,6 +131,9 @@ GitLab pipelines are configured via `.gitlab-ci.yml`; GitHub Actions via `.githu
 
 ### Cross-Platform Build Support Checks
 
+- GitHub-hosted runner images: https://github.com/actions/runner-images
+- 
+
 | Runner Host | OS                  | Arch. | Compiler   | Image              |
 | ----------- | ------------------- | ----- | ---------- | ------------------ |
 | GitHub      | macOS 26            | arm64 | AppleClang | `macos-26`         |
