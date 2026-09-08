@@ -52,6 +52,9 @@ jobs:
           clang++ --version || true
           gcc --version || true
           g++ --version || true
+          brew list --versions llvm llvm@20 llvm@21 || true
+          ls -l /opt/homebrew/opt/llvm*/bin/clang 2>/dev/null || true
+          ls -l /opt/homebrew/opt/llvm*/bin/clang++ 2>/dev/null || true
 
           echo
           echo "=== Homebrew ==="
