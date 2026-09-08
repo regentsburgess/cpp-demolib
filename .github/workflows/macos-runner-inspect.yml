@@ -1,0 +1,56 @@
+name: Inspect macOS Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  inspect:
+    strategy:
+      matrix:
+        runner:
+          - macos-26
+          - macos-26-intel
+
+    runs-on: ${{ matrix.runner }}
+
+    steps:
+      - name: Inspect environment
+        run: |
+          echo "=== Architecture ==="
+          uname -a
+          uname -m
+
+          echo
+          echo "=== Environment ==="
+          env | sort
+
+          echo
+          echo "=== PATH ==="
+          tr ':' '\n' <<< "$PATH"
+
+          echo
+          echo "=== Default compiler commands ==="
+          command -v cc || true
+          command -v c++ || true
+          command -v clang || true
+          command -v clang++ || true
+          command -v gcc || true
+          command -v g++ || true
+
+          echo
+          echo "=== Versioned compilers ==="
+          ls -l /usr/bin/{clang,clang++,gcc,g++} 2>/dev/null || true
+          ls -l /opt/homebrew/bin/{clang,clang++,gcc*,g++*} 2>/dev/null || true
+          ls -l /usr/local/bin/{clang,clang++,gcc*,g++*} 2>/dev/null || true
+
+          echo
+          echo "=== Versions ==="
+          /usr/bin/clang++ --version || true
+          clang++ --version || true
+          gcc --version || true
+          g++ --version || true
+
+          echo
+          echo "=== Homebrew ==="
+          brew --prefix
+          brew list --versions llvm gcc || true

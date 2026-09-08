@@ -1,10 +1,10 @@
 name: Cross Platform Build and Test
 
 on:
-  push:
-    branches:
-      - '**'
-  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - '**'
+  # workflow_dispatch:
 
 permissions:
   contents: read
