@@ -1,11 +1,12 @@
 name: Code Quality
 
 on:
-  push:
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+  # Temporarily disabling while focusing on cross platform build support CI.
+  # push:
+  # pull_request:
+  #   branches:
+  #     - main
+  # workflow_dispatch:
 
 permissions:
   contents: read
