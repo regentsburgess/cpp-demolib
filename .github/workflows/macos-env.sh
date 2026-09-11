@@ -1,7 +1,14 @@
 #!/bin/sh
 
+# References
+# 1. https://github.com/actions/runner-images
+
+
 echo "===== Architecture ====="
 uname -a
+
+echo "===== PATH ====="
+echo "$PATH"
 
 echo
 echo "===== CC ====="
