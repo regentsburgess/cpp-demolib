@@ -39,7 +39,7 @@ else
     echo "brew not found."
 fi
 if [ "$brew_installed" = "true" ] && llvm_prefix=$(brew --prefix llvm@20); then
-    echo llvm prefix: "$llvm_prefix"
+    echo llvm@20 prefix: "$llvm_prefix"
 else
     echo "llvm not installed via Homebrew."
 fi
