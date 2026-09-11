@@ -46,7 +46,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Inspect Environment
-        run: run .github/workflows/macos-env.sh
+        run: .github/workflows/macos-env.sh
       - name: Configure, build, and test
         run: cmake --workflow --preset ${{ matrix.workflow-preset }}
 
