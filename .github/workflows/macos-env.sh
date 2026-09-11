@@ -30,6 +30,20 @@ else
     echo 'Environment variable CXX is not set.'
 fi
 
+echo
+echo "===== Homebrew ====="
+if command -v brew; then
+    brew_installed="true"
+    brew --version
+else
+    echo "brew not found."
+fi
+if [ "$brew_installed" = "true" ] && llvm_prefix=$(brew --prefix llvm@20); then
+    echo llvm prefix: "$llvm_prefix"
+else
+    echo "llvm not installed via Homebrew."
+fi
+
 tools="cmake ninja clang-format clang-tidy"
 for tool in $tools; do
     echo
@@ -40,3 +54,4 @@ for tool in $tools; do
         echo "$tool not found."
     fi
 done
+
