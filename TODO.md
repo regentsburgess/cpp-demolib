@@ -1,13 +1,20 @@
 # TODO
 
 1. Get non-embedded CI cross-platform checks working.
-   1. Use existing os-specific workflow presets if possible.  Derive from them with minimal changes otherwise.
-2. Get code-quality CI checks working.
-3. Check if inclusion of consumer tests should hinge on DEMOLIB_INSTALL's value.  Put differently, will the consumer tests break of DEMOLIB_INSTALL is false?  If so, what to do?  Should the tests not be include?  Should the combination result in an error?  A warning?
-4. Root CMakeLists.txt cleanup
+   1. [ ] Linux
+   2. [ ] macOS
+   3. [ ] Windows
+2. code quality build preset
+   1. clang-format
+   2. clang-tidy
+   3. clang-coverage
+   4. clang-coverage report
+3. all workflow preset
+4. Check if inclusion of consumer tests should hinge on DEMOLIB_INSTALL's value.  Put differently, will the consumer tests break of DEMOLIB_INSTALL is false?  If so, what to do?  Should the tests not be include?  Should the combination result in an error?  A warning?
+5. Root CMakeLists.txt cleanup
    1. Move clangd + compile_commands.json export to separate file
    2. Move common config function to separate file
-5. Cross-compilation target(s)?
+6. Cross-compilation target(s)?
    1. What's easy, relevant, and instructive?
    2. Existing Docker images or build Docker images for CI-driven builds?
    3. What do by CI providers (GitHub and/or GitLab) support?
@@ -18,3 +25,5 @@
       3. Embedded Bare Metal ARM target
          1. NXP RT1170
          2. STM32 Cortex-M
+7. GitLab setup
+8. 

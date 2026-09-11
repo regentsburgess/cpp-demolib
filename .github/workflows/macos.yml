@@ -1,10 +1,13 @@
+# References
+# 1. https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatch
+# 2. # https://github.com/actions/runner-images
+
 name: Cross Platform Build and Test
 
 on:
   push:
     branches:
       - '**'
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,7 +16,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# https://github.com/actions/runner-images
 jobs:
   macos-arm64:
     name: macOS ARM64 / ${{ matrix.toolchain.compiler }} / ${{ matrix.workflow-preset }}
@@ -43,11 +45,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - name: Show toolchain
-        run: |
-          "$CXX" --version
-          cmake --version
-          ninja --version
+      - name: Inspect Environment
+        run: run .github/workflows/macos-env.sh
       - name: Configure, build, and test
         run: cmake --workflow --preset ${{ matrix.workflow-preset }}
 
