@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   macos-arm64:
-    name: macOS x64 / ${{ matrix.toolchain.compiler }} / ${{ matrix.workflow-preset }}
+    name: macOS ARM64 / ${{ matrix.toolchain.compiler }} / ${{ matrix.workflow-preset }}
     runs-on: macos-26
     timeout-minutes: 30
     strategy:
@@ -46,7 +46,10 @@ jobs:
         with:
           persist-credentials: false
       - name: Inspect Environment
-        run: .github/workflows/macos-env.sh
+        run: |
+          ln -s /opt/homebrew/opt/llvm@20/bin/clang-format /opt/homebrew/bin/clang-format
+          ln -s /opt/homebrew/opt/llvm@20/bin/clang-tidy /opt/homebrew/bin/clang-tidy
+          .github/workflows/macos-env.sh
       - name: Configure, build, and test
         run: cmake --workflow --preset ${{ matrix.workflow-preset }}
 
