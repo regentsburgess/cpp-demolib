@@ -98,8 +98,8 @@ jobs:
         run: cmake --workflow --preset ${{ matrix.workflow-preset }}
 
 
-  required-build:
-    name: Required Build and Test
+  check-jobs:
+    name: Check Job End States
     if: ${{ always() }}
     needs:
       - macos-arm64
@@ -107,10 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Require every build and test job
-        env:
-          ARM64_RESULT: ${{ needs.macos-arm64.result }}
-          X64_RESULT: ${{ needs.macos-x64.result }}
+      - name: Require success for all jobs
         run: |
-          test "$ARM64_RESULT" = success
-          test "$X64_RESULT" = success
+          test ${{ needs.macos-arm64.result }} = success
+          test ${{ needs.macos-x64.result }} = success
