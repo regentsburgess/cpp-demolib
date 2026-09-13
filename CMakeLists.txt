@@ -30,36 +30,39 @@ project(${LIB_PROJECT_NAME}
     LANGUAGES CXX
 )
 message(STATUS "CMAKE_GENERATOR: ${CMAKE_GENERATOR}")
-message(STATUS "${LIB_PROJECT_NAME} PROJECT_IS_TOP_LEVEL: ${PROJECT_IS_TOP_LEVEL}")
+message(STATUS "PROJECT_IS_TOP_LEVEL: ${PROJECT_IS_TOP_LEVEL}")
 
 # Options:
 # Settings that an incorporating project might want control of
-## Static Analysis:
+## clang-format:
+option(DEMOLIB_CLANG_FORMAT_ENABLE "Run clang-format, fixing formatting where possible." OFF)
+message(STATUS "DEMOLIB_CLANG_FORMAT_ENABLE: ${DEMOLIB_CLANG_FORMAT_ENABLE}")
+## Clang address and undefined behavior sanitizers:
+option(DEMOLIB_CLANG_SANITIZERS_ENABLE "Instrument ${LIB_PROJECT_NAME} targets with AddressSanitizer and UndefinedBehaviorSanitizer." OFF)
+message(STATUS "DEMOLIB_CLANG_SANITIZERS_ENABLE: ${DEMOLIB_CLANG_SANITIZERS_ENABLE}")
+## clang-tidy:
+option(DEMOLIB_CLANG_TIDY_ENABLE "Run clang-tidy while compiling ${LIB_PROJECT_NAME} targets." OFF)
+message(STATUS "DEMOLIB_CLANG_TIDY_ENABLE: ${DEMOLIB_CLANG_TIDY_ENABLE}")
 option(DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS "Treat clang-tidy warnings as errors." OFF)
 message(STATUS "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS: ${DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS}")
-option(DEMOLIB_ENABLE_CLANG_TIDY "Run clang-tidy while compiling ${LIB_PROJECT_NAME} targets." OFF)
-message(STATUS "DEMOLIB_ENABLE_CLANG_TIDY: ${DEMOLIB_ENABLE_CLANG_TIDY}")
-## Coverage:
-option(DEMOLIB_ENABLE_COVERAGE "Instrument ${LIB_PROJECT_NAME} targets for LLVM source-based coverage." OFF)
-message(STATUS "DEMOLIB_ENABLE_COVERAGE: ${DEMOLIB_ENABLE_COVERAGE}")
-## Dynamic Analysis:
-option(DEMOLIB_ENABLE_SANITIZERS "Instrument ${LIB_PROJECT_NAME} targets with AddressSanitizer and UndefinedBehaviorSanitizer." OFF)
-message(STATUS "DEMOLIB_ENABLE_SANITIZERS: ${DEMOLIB_ENABLE_SANITIZERS}")
-## Install Project:
-## True = Install this library's static archive, headers, and CMake package.
-## False is useful when this library is being incorporated into a source tree
-option(DEMOLIB_INSTALL "Generate ${LIB_PROJECT_NAME} installation rules." ${PROJECT_IS_TOP_LEVEL})
-message(STATUS "DEMOLIB_INSTALL: ${DEMOLIB_INSTALL}")
-## Warnings as Errors:
+## Compiler warnings as errors:
 option(DEMOLIB_COMPILER_WARNINGS_AS_ERRORS "Treat warnings as errors." ${PROJECT_IS_TOP_LEVEL})
 message(STATUS "DEMOLIB_COMPILER_WARNINGS_AS_ERRORS: ${DEMOLIB_COMPILER_WARNINGS_AS_ERRORS}")
+## llvm-cov:
+option(DEMOLIB_COVERAGE_ENABLE "Instrument ${LIB_PROJECT_NAME} targets for LLVM source-based coverage." OFF)
+message(STATUS "DEMOLIB_COVERAGE_ENABLE: ${DEMOLIB_COVERAGE_ENABLE}")
+## Install Project:
+## True = Install this library's static archive, headers, and CMake package.
+## False is useful when this library is being incorporated into another project
+option(DEMOLIB_INSTALL "Generate ${LIB_PROJECT_NAME} installation rules." ${PROJECT_IS_TOP_LEVEL})
+message(STATUS "DEMOLIB_INSTALL: ${DEMOLIB_INSTALL}")
 
 # Dependencies:
 # Test-only at the moment.  See below.
 
 # Clang-Tidy:
 # Optionally run clang-tidy during the build process.
-if(DEMOLIB_ENABLE_CLANG_TIDY)
+if(DEMOLIB_CLANG_TIDY_ENABLE)
     message(STATUS "clang-tidy enabled. Searching for clang-tidy executable.")
     find_program(CLANG_TIDY_EXE NAMES clang-tidy-19 clang-tidy clang-tidy.exe REQUIRED)
     message(STATUS "clang-tidy: ${CLANG_TIDY_EXE}")
@@ -90,7 +93,7 @@ function(demolib_apply_common_compile_settings target_name)
 
     get_target_property(target_type ${target_name} TYPE)
 
-    if(DEMOLIB_ENABLE_SANITIZERS)
+    if(DEMOLIB_CLANG_SANITIZERS_ENABLE)
         target_compile_options(${target_name} PRIVATE
             -fsanitize=address,undefined
             -fno-omit-frame-pointer
@@ -102,7 +105,7 @@ function(demolib_apply_common_compile_settings target_name)
         endif()
     endif()
 
-    if(DEMOLIB_ENABLE_COVERAGE)
+    if(DEMOLIB_COVERAGE_ENABLE)
         target_compile_options(${target_name} PRIVATE
             -fprofile-instr-generate
             -fcoverage-mapping
@@ -114,7 +117,7 @@ function(demolib_apply_common_compile_settings target_name)
         endif()
     endif()
 
-    if(DEMOLIB_ENABLE_CLANG_TIDY)
+    if(DEMOLIB_CLANG_TIDY_ENABLE)
         set_and_echo(clang_tidy_command "${CLANG_TIDY_EXE}" --quiet)
         if(DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS)
             list(APPEND clang_tidy_command "--warnings-as-errors=*")
@@ -123,10 +126,10 @@ function(demolib_apply_common_compile_settings target_name)
     endif()
 endfunction()
 
-if(DEMOLIB_ENABLE_SANITIZERS AND DEMOLIB_ENABLE_COVERAGE)
+if(DEMOLIB_CLANG_SANITIZERS_ENABLE AND DEMOLIB_COVERAGE_ENABLE)
     message(FATAL_ERROR "Sanitizer and coverage instrumentation must use separate build trees.")
 endif()
-if((DEMOLIB_ENABLE_SANITIZERS OR DEMOLIB_ENABLE_COVERAGE) AND NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if((DEMOLIB_CLANG_SANITIZERS_ENABLE OR DEMOLIB_COVERAGE_ENABLE) AND NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message(FATAL_ERROR "DemoLib sanitizer and coverage presets require Clang.")
 endif()
 

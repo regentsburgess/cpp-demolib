@@ -59,12 +59,14 @@
         "editor.formatOnType": true
     },
     "cSpell.words": [
+        "appleclang",
         "ARGN",
         "BINDIR",
         "ctest",
         "DATAROOTDIR",
         "DDEMOLIB",
         "DEMOLIB",
+        "endforeach",
         "endfunction",
         "endmacro",
         "fcoverage",

@@ -9,7 +9,7 @@
   ],
   "configurePresets": [
     {
-      "name": "macos-config-base",
+      "name": "macos-appleclang-config-base",
       "hidden": true,
       "inherits": "os-base",
       "condition": {
@@ -17,20 +17,26 @@
         "lhs": "${hostSystemName}",
         "rhs": "Darwin"
       },
-      "cacheVariables": {}
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "/usr/bin/clang",
+        "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS": "ON",
+        "DEMOLIB_CLANG_TIDY_ENABLE": "ON"
+      }
     },
     {
-      "name": "macos-config-debug",
+      "name": "macos-appleclang-config-debug",
       "displayName": "macOS Debug Config Preset",
-      "inherits": "macos-config-base",
+      "inherits": "macos-appleclang-config-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "macos-config-release",
+      "name": "macos-appleclang-config-release",
       "displayName": "macOS Release Config Preset",
-      "inherits": "macos-config-base",
+      "inherits": "macos-appleclang-config-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -38,27 +44,27 @@
   ],
   "buildPresets": [
     {
-      "name": "macos-build-debug",
+      "name": "macos-appleclang-build-debug",
       "displayName": "macOS Debug Build Preset",
-      "configurePreset": "macos-config-debug"
+      "configurePreset": "macos-appleclang-config-debug"
     },
     {
-      "name": "macos-build-release",
+      "name": "macos-appleclang-build-release",
       "displayName": "macOS Release Build Preset",
-      "configurePreset": "macos-config-release"
+      "configurePreset": "macos-appleclang-config-release"
     },
     {
-      "name": "macos-install-debug",
+      "name": "macos-appleclang-install-debug",
       "displayName": "macOS Debug Build and Install Preset",
-      "configurePreset": "macos-config-debug",
+      "configurePreset": "macos-appleclang-config-debug",
       "targets": [
         "install"
       ]
     },
     {
-      "name": "macos-install-release",
+      "name": "macos-appleclang-install-release",
       "displayName": "macOS Release Build and Install Preset",
-      "configurePreset": "macos-config-release",
+      "configurePreset": "macos-appleclang-config-release",
       "targets": [
         "install"
       ]
@@ -66,17 +72,17 @@
   ],
   "testPresets": [
     {
-      "name": "macos-test-debug",
+      "name": "macos-appleclang-test-debug",
       "displayName": "macOS Debug Test Preset",
-      "configurePreset": "macos-config-debug",
+      "configurePreset": "macos-appleclang-config-debug",
       "output": {
         "outputOnFailure": true
       }
     },
     {
-      "name": "macos-test-release",
+      "name": "macos-appleclang-test-release",
       "displayName": "macOS Release Test Preset",
-      "configurePreset": "macos-config-release",
+      "configurePreset": "macos-appleclang-config-release",
       "output": {
         "outputOnFailure": true
       }
@@ -84,38 +90,38 @@
   ],
   "workflowPresets": [
     {
-      "name": "macos-test-debug",
+      "name": "macos-appleclang-test-debug",
       "displayName": "macOS Debug Configure, Build, and Test Workflow Preset",
       "steps": [
         {
           "type": "configure",
-          "name": "macos-config-debug"
+          "name": "macos-appleclang-config-debug"
         },
         {
           "type": "build",
-          "name": "macos-build-debug"
+          "name": "macos-appleclang-build-debug"
         },
         {
           "type": "test",
-          "name": "macos-test-debug"
+          "name": "macos-appleclang-test-debug"
         }
       ]
     },
     {
-      "name": "macos-test-release",
+      "name": "macos-appleclang-test-release",
       "displayName": "macOS Release Configure, Build, and Test Workflow Preset",
       "steps": [
         {
           "type": "configure",
-          "name": "macos-config-release"
+          "name": "macos-appleclang-config-release"
         },
         {
           "type": "build",
-          "name": "macos-build-release"
+          "name": "macos-appleclang-build-release"
         },
         {
           "type": "test",
-          "name": "macos-test-release"
+          "name": "macos-appleclang-test-release"
         }
       ]
     }

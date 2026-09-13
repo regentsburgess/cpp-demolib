@@ -13,11 +13,11 @@
       "installDir": "${sourceDir}/build/${presetName}/stage",
       "cacheVariables": {
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "OFF",
+        "DEMOLIB_CLANG_TIDY_ENABLE": "OFF",
         "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS": "OFF",
-        "DEMOLIB_ENABLE_CLANG_TIDY": "OFF",
-        "DEMOLIB_ENABLE_COVERAGE": "OFF",
-        "DEMOLIB_ENABLE_SANITIZERS": "OFF"
+        "DEMOLIB_CLANG_SANITIZERS_ENABLE": "OFF",
+        "DEMOLIB_COVERAGE_ENABLE": "OFF"
       }
     }
   ]

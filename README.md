@@ -15,13 +15,13 @@ This is one of many ways to setup a CMake project for a reusable C++ library. It
 
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
+- [Planned Platforms and Tooling Support](#planned-platforms-and-tooling-support)
 - [Building](#building)
   - [CMake Presets](#cmake-presets)
   - [Workflow Presets](#workflow-presets)
   - [Config, Build, and Test Presets](#config-build-and-test-presets)
   - [Build Options](#build-options)
 - [Continuous Integration](#continuous-integration)
-  - [Cross-Platform Build Support Checks](#cross-platform-build-support-checks)
   - [Code Quality Checks](#code-quality-checks)
 - [Use C++ DemoLib in Another CMake Project](#use-c-demolib-in-another-cmake-project)
   - [Add to Project as a subdirectory](#add-to-project-as-a-subdirectory)
@@ -50,6 +50,27 @@ cmake --workflow --preset <os>-test-debug
 ```
 
 _`<os>` should match one of `linux`, `macos`, or `windows`._
+
+## Planned Platforms and Tooling Support
+
+| OS    | Arch  | Compiler      | Format       | Static Analysis | Sanitizers  | Coverage        | Status |
+| ----- | ----- | ------------- | ------------ | --------------- | ----------- | --------------- | ------ |
+| Linux | arm64 | Clang 20      | clang-format | clang-tidy      | ASan, UBSan | llvm-cov        |        |
+| Linux | arm64 | GCC 15        | clang-format | clang-tidy      | ASan, UBSan | gcov            |        |
+| Linux | x64   | Clang 20      | clang-format | clang-tidy      | ASan, UBSan | llvm-cov        |        |
+| Linux | x64   | GCC 15        | clang-format | clang-tidy      | ASan, UBSan | gcov            |        |
+| macOS | arm64 | AppleClang 21 | clang-format | clang-tidy      | ASan, UBSan | llvm-cov        | WIP    |
+| macOS | arm64 | Clang 20      | clang-format | clang-tidy      | ASan, UBSan | llvm-cov        |        |
+| macOS | arm64 | GCC 15        | clang-format | clang-tidy      | ---         | gcov            |        |
+| macOS | x64   | AppleClang 21 | clang-format | clang-tidy      | ASan, UBSan | llvm-cov        | WIP    |
+| macOS | x64   | Clang 20      | clang-format | clang-tidy      | ASan, UBSan | llvm-cov        |        |
+| macOS | x64   | GCC 15        | clang-format | clang-tidy      | ASan, UBSan | gcov            |        |
+| Win   | arm64 | clang-cl 22   | clang-format | clang-tidy      | ---         | llvm-cov        |        |
+| Win   | arm64 | MSVC 14.51    | clang-format | MSVC /analyze   | ---         | ---             |        |
+| Win   | x64   | clang-cl 20   | clang-format | clang-tidy      | ASan, UBSan | llvm-cov        |        |
+| Win   | x64   | GCC 15        | clang-format | clang-tidy      | ---         | gcov            |        |
+| Win   | x64   | LLVM-MinGW 20 | clang-format | clang-tidy      | ASan, UBSan | llvm-cov        |        |
+| Win   | x64   | MSVC 14.51    | clang-format | MSVC /analyze   | ASan        | OpenCppCoverage |        |
 
 ## Building
 
@@ -98,27 +119,20 @@ These build options are implemented as [CMake Cache](https://cmake.org/cmake/hel
 - `BUILD_TESTING`. Include C++ DemoLib tests if enabled.
   - Top-level: Defaults to `ON`.
   - Consumed: Value of `BUILD_TESTING` is ignored and C++ DemoLib tests are not included.
+- `DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS`. Treat clang-tidy warnings as errors.
+  - Defaults to `OFF`.
+- `DEMOLIB_CLANG_TIDY_ENABLE`. Run clang-tidy while compiling C++ DemoLib targets.
+  - Defaults to `OFF`.
+- `DEMOLIB_COVERAGE_ENABLE`. Instrument C++ DemoLib targets for LLVM source-based coverage.
+  - Defaults to `OFF`.
+- `DEMOLIB_CLANG_SANITIZERS_ENABLE`. Instrument C++ DemoLib with Clang's [AddressSanitizer](https://clang.llvm.org/docs/AddressSanitizer.html) and [UndefinedBehaviorSanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html).
+  - Defaults to `OFF`.
 - `DEMOLIB_COMPILER_WARNINGS_AS_ERRORS`. Value is passed to CMake's `COMPILE_WARNING_AS_ERROR`. 
   - Top-level: Defaults to `ON`.
   - Consumed: Defaults to `OFF`
 - `DEMOLIB_INSTALL`. Generate C++ DemoLib installation rules if truthy.
   - Top-level: Defaults to `ON`.
   - Consumed: Defaults to `OFF`
-
-__The following build options are used by the CI Pipelines.__
-
-- `DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS`. Treat clang-tidy warnings as errors.
-  - Defaults to `OFF`.
-  - Turned `ON` by `ci-clang-tidy` workflow preset.
-- `DEMOLIB_ENABLE_CLANG_TIDY`. Run clang-tidy while compiling C++ DemoLib targets.
-  - Defaults to `OFF`.
-  - Turned `ON` by `ci-clang-tidy` workflow preset.
-- `DEMOLIB_ENABLE_COVERAGE`. Instrument C++ DemoLib targets for LLVM source-based coverage.
-  - Defaults to `OFF`.
-  - Turned `ON` by `ci-clang-coverage` workflow preset.
-- `DEMOLIB_ENABLE_SANITIZERS`. Instrument C++ DemoLib with Clang's [AddressSanitizer](https://clang.llvm.org/docs/AddressSanitizer.html) and [UndefinedBehaviorSanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html).
-  - Defaults to `OFF`.
-  - Turned `ON` by `ci-clang-tidy` workflow preset.
 
 ## Continuous Integration
 
@@ -129,27 +143,6 @@ C++ DemoLib uses GitHub and GitLab CI pipelines for:
 
 GitLab pipelines are configured via `.gitlab-ci.yml`; GitHub Actions via `.github/workflows/*.yml`. 
 
-### Cross-Platform Build Support Checks
-
-- GitHub-hosted runner images: https://github.com/actions/runner-images
-- 
-
-| Runner Host | OS                  | Arch. | Compiler   | Image              |
-| ----------- | ------------------- | ----- | ---------- | ------------------ |
-| GitHub      | macOS 26            | arm64 | AppleClang | `macos-26`         |
-| GitHub      | macOS 26            | arm64 | Clang      | `macos-26`         |
-| GitHub      | macOS 26            | arm64 | GCC        | `macos-26`         |
-| GitHub      | macOS 26            | x64   | AppleClang | `macos-26-intel`   |
-| GitHub      | macOS 26            | x64   | Clang      | `macos-26-intel`   |
-| GitHub      | macOS 26            | x64   | GCC        | `macos-26-intel`   |
-| GitHub      | Ubuntu 26           | arm64 | Clang      | `ubuntu-26.04-arm` |
-| GitHub      | Ubuntu 26           | arm64 | GCC        | `ubuntu-26.04-arm` |
-| GitHub      | Ubuntu 26           | x64   | Clang      | `ubuntu-26.04`     |
-| GitHub      | Ubuntu 26           | x64   | GCC        | `ubuntu-26.04`     |
-| GitHub      | Windows 11          | arm64 | Clang      | `windows-11-arm`   |
-| GitHub      | Windows 11          | arm64 | MSVC       | `windows-11-arm`   |
-| GitHub      | Windows Server 2025 | x64   | Clang      | `windows-2025`     |
-| GitHub      | Windows Server 2025 | x64   | MSVC       | `windows-2025`     |
 
 ### Code Quality Checks
 

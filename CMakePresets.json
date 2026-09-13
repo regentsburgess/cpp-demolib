@@ -6,7 +6,7 @@
   },
   "include": [
     "cmake/presets/linux.json",
-    "cmake/presets/macos.json",
+    "cmake/presets/macos-appleclang.json",
     "cmake/presets/windows.json"
   ]
 }

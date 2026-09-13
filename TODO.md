@@ -26,4 +26,13 @@
          1. NXP RT1170
          2. STM32 Cortex-M
 7. GitLab setup
-8. 
+
+
+1. **Install/export support and a consumer smoke test — Highest priority.** Proves another project can install your library, find it with `find_package()`, and link its exported target.
+2. **clangd + compilation database — High priority.** Gives developers navigation, completion, and diagnostics through a reproducible editor setup.
+3. **`.editorconfig` — High priority.** Keeps indentation, encoding, and line endings consistent across C++, CMake, YAML, and documentation.
+4. **Dependency update automation — High priority.** Keeps dependencies and GitHub Actions from quietly becoming stale.
+5. **CMake and workflow linting — Medium priority.** Catches problems in the template’s build and CI infrastructure—the parts downstream projects will copy.
+6. **API documentation — Medium priority.** Provides an example of documenting and publishing the library’s public interface; Doxygen is one option.
+7. **Benchmarks — Optional.** Demonstrates measuring performance separately from correctness tests.
+8. **Fuzzing — Optional.** Adds value when the example includes parsers, decoders, or other functions that accept complex input.
