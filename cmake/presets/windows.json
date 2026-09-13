@@ -5,11 +5,11 @@
     "minor": 30
   },
   "include": [
-    "os-common.json"
+    "os-base.json"
   ],
   "configurePresets": [
     {
-      "name": "windows-base",
+      "name": "windows-config-base",
       "hidden": true,
       "inherits": "os-base",
       "condition": {
@@ -17,23 +17,20 @@
         "lhs": "${hostSystemName}",
         "rhs": "Windows"
       },
-      "cacheVariables": {
-        "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS": "OFF",
-        "DEMOLIB_ENABLE_CLANG_TIDY": "OFF"
-      }
+      "cacheVariables": {}
     },
     {
-      "name": "windows-debug",
-      "displayName": "Windows Debug (Ninja)",
-      "inherits": "windows-base",
+      "name": "windows-config-debug",
+      "displayName": "Windows Debug Config Preset",
+      "inherits": "windows-config-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
-      "name": "windows-release",
-      "displayName": "Windows Release (Ninja)",
-      "inherits": "windows-base",
+      "name": "windows-config-release",
+      "displayName": "Windows Release Config Preset",
+      "inherits": "windows-config-base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
@@ -41,25 +38,27 @@
   ],
   "buildPresets": [
     {
-      "name": "windows-debug",
-      "configurePreset": "windows-debug"
+      "name": "windows-build-debug",
+      "displayName": "Windows Debug Build Preset",
+      "configurePreset": "windows-config-debug"
     },
     {
-      "name": "windows-release",
-      "configurePreset": "windows-release"
+      "name": "windows-build-release",
+      "displayName": "Windows Release Build Preset",
+      "configurePreset": "windows-config-release"
     },
     {
-      "name": "windows-debug-install",
-      "displayName": "Windows Build + Install Debug (stage)",
-      "configurePreset": "windows-debug",
+      "name": "windows-install-debug",
+      "displayName": "Windows Debug Build and Install Preset",
+      "configurePreset": "windows-config-debug",
       "targets": [
         "install"
       ]
     },
     {
-      "name": "windows-release-install",
-      "displayName": "Windows Build + Install Release (stage)",
-      "configurePreset": "windows-release",
+      "name": "windows-install-release",
+      "displayName": "Windows Release Build and Install Preset",
+      "configurePreset": "windows-config-release",
       "targets": [
         "install"
       ]
@@ -67,15 +66,17 @@
   ],
   "testPresets": [
     {
-      "name": "windows-debug-test",
-      "configurePreset": "windows-debug",
+      "name": "windows-test-debug",
+      "displayName": "Windows Debug Test Preset",
+      "configurePreset": "windows-config-debug",
       "output": {
         "outputOnFailure": true
       }
     },
     {
-      "name": "windows-release-test",
-      "configurePreset": "windows-release",
+      "name": "windows-test-release",
+      "displayName": "Windows Release Test Preset",
+      "configurePreset": "windows-config-release",
       "output": {
         "outputOnFailure": true
       }
@@ -83,46 +84,38 @@
   ],
   "workflowPresets": [
     {
-      "name": "windows-debug-test",
-      "displayName": "Windows Configure + Build + Test + Install (Debug)",
+      "name": "windows-test-debug",
+      "displayName": "Windows Debug Configure, Build, and Test Workflow Preset",
       "steps": [
         {
           "type": "configure",
-          "name": "windows-debug"
+          "name": "windows-config-debug"
         },
         {
           "type": "build",
-          "name": "windows-debug"
+          "name": "windows-build-debug"
         },
         {
           "type": "test",
-          "name": "windows-debug-test"
-        },
-        {
-          "type": "build",
-          "name": "windows-debug-install"
+          "name": "windows-test-debug"
         }
       ]
     },
     {
-      "name": "windows-release-test",
-      "displayName": "Windows Configure + Build + Test + Install (Release)",
+      "name": "windows-test-release",
+      "displayName": "Windows Release Configure, Build, and Test Workflow Preset",
       "steps": [
         {
           "type": "configure",
-          "name": "windows-release"
+          "name": "windows-config-release"
         },
         {
           "type": "build",
-          "name": "windows-release"
+          "name": "windows-build-release"
         },
         {
           "type": "test",
-          "name": "windows-release-test"
-        },
-        {
-          "type": "build",
-          "name": "windows-release-install"
+          "name": "windows-test-release"
         }
       ]
     }

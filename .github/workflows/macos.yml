@@ -1,0 +1,64 @@
+# References
+# 1. https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#onworkflow_dispatch
+# 2. https://github.com/actions/runner-images
+
+name: macOS Build and Test
+
+on:
+  push:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos:
+    name: macOS / ${{ matrix.arch.name }} / ${{ matrix.workflow-preset }}
+    runs-on: ${{ matrix.arch.runner-image }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        workflow-preset:
+          - macos-appleclang-test-debug
+          - macos-appleclang-test-release
+        arch:
+          - name: arm64
+            homebrew-root: /opt/homebrew
+            runner-image: macos-26
+          - name: x64
+            homebrew-root: /usr/local
+            runner-image: macos-26-intel
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Symlink clang-format and clang-tidy to a PATH location
+        # Homebrew's versioned LLVM is keg-only; its tools aren't exposed through /opt/homebrew/bin.
+        # Expose clang-format and clang-tidy without putting the entire LLVM toolchain on the path.
+        run: |
+          ln -s ${{ matrix.arch.homebrew-root }}/opt/llvm@20/bin/clang-format \
+          ${{ matrix.arch.homebrew-root }}/bin/clang-format
+          ln -s ${{ matrix.arch.homebrew-root }}/opt/llvm@20/bin/clang-tidy \
+          ${{ matrix.arch.homebrew-root }}/bin/clang-tidy
+      - name: Inspect Environment
+        run: .github/workflows/macos-env.sh
+      - name: Configure, build, and test
+        run: cmake --workflow --preset ${{ matrix.workflow-preset }}
+
+  check-jobs:
+    name: Check Job End States
+    if: ${{ always() }}
+    needs:
+      - macos
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require success for all jobs
+        run: test ${{ needs.macos.result }} = success

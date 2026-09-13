@@ -12,9 +12,12 @@
       "binaryDir": "${sourceDir}/build/${presetName}",
       "installDir": "${sourceDir}/build/${presetName}/stage",
       "cacheVariables": {
-        "BUILD_TESTING": "ON",
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "OFF",
+        "DEMOLIB_CLANG_TIDY_ENABLE": "OFF",
+        "DEMOLIB_CLANG_TIDY_WARNINGS_AS_ERRORS": "OFF",
+        "DEMOLIB_CLANG_SANITIZERS_ENABLE": "OFF",
+        "DEMOLIB_COVERAGE_ENABLE": "OFF"
       }
     }
   ]

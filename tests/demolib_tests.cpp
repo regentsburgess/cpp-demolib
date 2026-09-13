@@ -10,20 +10,38 @@ TEST(DemoLibMetadata, VersionMatchesProject) {
 }
 
 TEST(DemoLibGreet, EmptyNameReturnsGenericHello) {
-    auto expected = "Hello from " + demolib::lib_name() + " " + demolib::lib_version();
+    std::string expected{"Hello from "};
+    expected += demolib::lib_name();
+    expected += ' ';
+    expected += demolib::lib_version();
+
     EXPECT_EQ(demolib::greet(""), expected);
 }
 
 TEST(DemoLibGreet, NonEmptyNameReturnsPersonalizedHello) {
     const auto* name = "Regent";
-    auto expected =
-        "Hello from " + demolib::lib_name() + " " + demolib::lib_version() + ", " + name + "!";
+
+    std::string expected{"Hello from "};
+    expected += demolib::lib_name();
+    expected += ' ';
+    expected += demolib::lib_version();
+    expected += ", ";
+    expected += name;
+    expected += '!';
+
     EXPECT_EQ(demolib::greet(name), expected);
 }
 
 TEST(DemoLibGreet, PreservesWhitespaceAndPunctuation) {
     const auto* name = "Regent Jr.";
-    auto expected =
-        "Hello from " + demolib::lib_name() + " " + demolib::lib_version() + ", " + name + "!";
+
+    std::string expected{"Hello from "};
+    expected += demolib::lib_name();
+    expected += ' ';
+    expected += demolib::lib_version();
+    expected += ", ";
+    expected += name;
+    expected += '!';
+
     EXPECT_EQ(demolib::greet(name), expected);
 }
